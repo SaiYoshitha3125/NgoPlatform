@@ -28,7 +28,7 @@ const Donate = () => {
         setSuccess(false);
 
         try {
-            await axios.post('http://localhost:5000/api/donations/register', formData);
+            await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/donations/register`, formData);
             setSuccess(true);
             setFormData({
                 donorName: '',

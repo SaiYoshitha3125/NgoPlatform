@@ -78,8 +78,8 @@ const VolunteerDashboard = () => {
             const token = localStorage.getItem('auth-token');
             const config = { headers: { 'auth-token': token } };
 
-            const profileRes = await axios.get('http://localhost:5000/api/volunteers/me', config);
-            const tasksRes = await axios.get('http://localhost:5000/api/volunteers/tasks', config);
+            const profileRes = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/volunteers/me`, config);
+            const tasksRes = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/volunteers/tasks`, config);
 
             setProfile({
                 ...profileRes.data,
@@ -106,7 +106,7 @@ const VolunteerDashboard = () => {
     const handleStartTask = async (taskId) => {
         try {
             const token = localStorage.getItem('auth-token');
-            await axios.put(`http://localhost:5000/api/volunteers/tasks/${taskId}`, { status: 'in-progress' }, { headers: { 'auth-token': token } });
+            await axios.put(`${import.meta.env.VITE_SERVER_URL}/api/volunteers/tasks/${taskId}`, { status: 'in-progress' }, { headers: { 'auth-token': token } });
             setTasks(tasks.map(t => t._id === taskId ? { ...t, status: 'in-progress' } : t));
         } catch (err) {
             console.error('Error starting task:', err);
@@ -116,7 +116,7 @@ const VolunteerDashboard = () => {
     const handleCompleteTask = async (taskId) => {
         try {
             const token = localStorage.getItem('auth-token');
-            await axios.put(`http://localhost:5000/api/volunteers/tasks/${taskId}`, { status: 'completed' }, { headers: { 'auth-token': token } });
+            await axios.put(`${import.meta.env.VITE_SERVER_URL}/api/volunteers/tasks/${taskId}`, { status: 'completed' }, { headers: { 'auth-token': token } });
             setTasks(tasks.map(t => t._id === taskId ? { ...t, status: 'completed' } : t));
         } catch (err) {
             console.error('Error completing task:', err);
@@ -127,7 +127,7 @@ const VolunteerDashboard = () => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('auth-token');
-            const res = await axios.put('http://localhost:5000/api/volunteers/me', profile, { headers: { 'auth-token': token } });
+            const res = await axios.put(`${import.meta.env.VITE_SERVER_URL}/api/volunteers/me`, profile, { headers: { 'auth-token': token } });
 
             // Update local state with saved data
             setProfile({

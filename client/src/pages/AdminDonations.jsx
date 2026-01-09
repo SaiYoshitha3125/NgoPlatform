@@ -20,7 +20,7 @@ const AdminDonations = () => {
 
     const fetchDonations = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/donations');
+            const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/donations`);
             setDonations(res.data);
             calculateStats(res.data);
             setLoading(false);

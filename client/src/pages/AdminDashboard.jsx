@@ -16,12 +16,12 @@ const AdminDashboard = () => {
         const fetchStats = async () => {
             try {
                 // Fetch Volunteers
-                const volRes = await axios.get('http://localhost:5000/api/volunteers');
+                const volRes = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/volunteers`);
                 const volunteers = volRes.data;
                 const pending = volunteers.filter(v => v.status === 'Pending').length;
 
                 // Fetch Donations
-                const donRes = await axios.get('http://localhost:5000/api/donations');
+                const donRes = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/donations`);
                 const donations = donRes.data;
                 const totalDonationAmount = donations.reduce((sum, d) => sum + d.amount, 0);
 

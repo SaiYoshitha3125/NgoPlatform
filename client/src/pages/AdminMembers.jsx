@@ -13,7 +13,7 @@ const AdminMembers = () => {
 
     const fetchMembers = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/users?role=Member');
+            const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/users?role=Member`);
             setMembers(res.data);
             setLoading(false);
         } catch (err) {

@@ -16,7 +16,7 @@ const AdminVolunteers = () => {
 
     const fetchVolunteers = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/volunteers');
+            const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/volunteers`);
             setVolunteers(res.data);
             setLoading(false);
         } catch (err) {
@@ -28,7 +28,7 @@ const AdminVolunteers = () => {
     const handleStatusUpdate = async (id, status) => {
         setUpdatingId(id);
         try {
-            await axios.put(`http://localhost:5000/api/volunteers/${id}/status`, { status });
+            await axios.put(`${import.meta.env.VITE_SERVER_URL}/api/volunteers/${id}/status`, { status });
 
             // Update local state
             setVolunteers(volunteers.map(vol =>

@@ -32,8 +32,7 @@ const DashboardLayout = ({ children, role, userName }) => {
         Volunteer: [
             { name: 'Dashboard', path: '/volunteer-dashboard', icon: <FaThLarge /> },
             { name: 'My Tasks', path: '/volunteer-tasks', icon: <FaTasks /> },
-            { name: 'My Donations', path: '/volunteer-donations', icon: <FaHandHoldingHeart /> },
-            { name: 'Impact Report', path: '/volunteer-impact', icon: <FaChartBar /> }, // Using FaChartBar, need to import it
+
             { name: 'My Profile', path: '/volunteer-profile', icon: <FaUser /> },
             { name: 'Events', path: '/volunteer-events', icon: <FaCalendarAlt /> },
         ],
@@ -53,6 +52,7 @@ const DashboardLayout = ({ children, role, userName }) => {
         Donor: [
             { name: 'Dashboard', path: '/donor-dashboard', icon: <FaThLarge /> },
             { name: 'My Donations', path: '/donor-donations', icon: <FaHandHoldingHeart /> },
+            { name: 'Impact Report', path: '/donor-impact', icon: <FaChartBar /> },
             { name: 'Profile', path: '/donor-profile', icon: <FaUser /> },
         ],
         Beneficiary: [

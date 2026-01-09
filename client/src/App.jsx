@@ -23,7 +23,7 @@ import AdminDonations from './pages/AdminDonations';
 
 function App() {
   const location = useLocation();
-  const isDashboard = location.pathname.includes('dashboard') || location.pathname.startsWith('/admin-') || location.pathname.startsWith('/volunteer-');
+  const isDashboard = location.pathname.includes('dashboard') || location.pathname.startsWith('/admin-') || location.pathname.startsWith('/volunteer-') || location.pathname.startsWith('/donor-');
 
   return (
     <div className="app">
@@ -48,6 +48,9 @@ function App() {
           <Route path="/volunteer-impact" element={<VolunteerDashboard />} />
           <Route path="/volunteer-events" element={<VolunteerDashboard />} />
           <Route path="/donor-dashboard" element={<DonorDashboard />} />
+          <Route path="/donor-donations" element={<DonorDashboard />} />
+          <Route path="/donor-impact" element={<DonorDashboard />} />
+          <Route path="/donor-profile" element={<DonorDashboard />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/admin-volunteers" element={<AdminVolunteers />} />
           <Route path="/admin-members" element={<AdminMembers />} />

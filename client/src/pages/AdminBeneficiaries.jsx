@@ -14,7 +14,7 @@ const AdminBeneficiaries = () => {
 
     const fetchBeneficiaries = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/beneficiaries');
+            const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/beneficiaries`);
             setBeneficiaries(res.data);
             setLoading(false);
         } catch (err) {
