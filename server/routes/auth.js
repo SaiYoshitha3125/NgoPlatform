@@ -38,23 +38,38 @@ router.post('/register', async (req, res) => {
 // Login
 router.post('/login', async (req, res) => {
     try {
+        if (!req.body || !req.body.email || !req.body.password) {
+            return res.status(400).json({ message: 'Email and password are required' });
+        }
+
         const { email, password } = req.body;
 
-        // Check user
         const user = await User.findOne({ email });
         if (!user) return res.status(400).json({ message: 'Invalid email or password' });
 
-        // Check password
         const validPass = await bcrypt.compare(password, user.password);
         if (!validPass) return res.status(400).json({ message: 'Invalid email or password' });
 
-        // Create token
-        const token = jwt.sign({ _id: user._id, role: user.role }, process.env.JWT_SECRET || 'secretkey', { expiresIn: '1d' });
+        const token = jwt.sign(
+            { _id: user._id, role: user.role },
+            process.env.JWT_SECRET || 'secretkey',
+            { expiresIn: '1d' }
+        );
 
-        res.header('auth-token', token).json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+        res.header('auth-token', token).json({
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
+        });
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('LOGIN ERROR:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
 
 module.exports = router;
