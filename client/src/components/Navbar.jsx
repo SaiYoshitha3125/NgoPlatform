@@ -9,7 +9,7 @@ const Navbar = () => {
     const token = localStorage.getItem('auth-token');
     const role = localStorage.getItem('user-role');
 
-    let dashboardPath = '/';
+    let dashboardPath = null;
     if (role === 'Member') dashboardPath = '/member-dashboard';
     else if (role === 'Volunteer') dashboardPath = '/volunteer-dashboard';
     else if (role === 'Donor') dashboardPath = '/donor-dashboard';
@@ -42,7 +42,7 @@ const Navbar = () => {
 
                     {token ? (
                         <>
-                            <Link to={dashboardPath} onClick={toggleMenu} className="btn btn-outline btn-sm" style={{ border: 'none', paddingLeft: 0 }}>Dashboard</Link>
+                            {dashboardPath && <Link to={dashboardPath} onClick={toggleMenu} className="btn btn-outline btn-sm" style={{ border: 'none', paddingLeft: 0 }}>Dashboard</Link>}
                             <button onClick={handleLogout} className="btn btn-outline btn-sm">Logout</button>
                         </>
                     ) : (

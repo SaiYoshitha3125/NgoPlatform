@@ -1,149 +1,164 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
-    FaThLarge,
-    FaUser,
-    FaCalendarAlt,
-    FaTasks,
-    FaSignOutAlt,
-    FaSearch,
-    FaBell,
-    FaUsers,
-    FaFileAlt,
-    FaHandHoldingHeart,
-    FaImages,
-    FaCertificate,
-    FaChartBar,
-    FaBars,
-    FaTimes
-} from 'react-icons/fa';
+  FaThLarge,
+  FaUser,
+  FaCalendarAlt,
+  FaTasks,
+  FaSignOutAlt,
+  FaSearch,
+  FaBell,
+  FaUsers,
+  FaFileAlt,
+  FaHandHoldingHeart,
+  FaImages,
+  FaCertificate,
+  FaChartBar,
+  FaBars,
+  FaTimes,
+  FaHome,
+} from "react-icons/fa";
 
 const DashboardLayout = ({ children, role, userName }) => {
-    const navigate = useNavigate();
-    const location = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    // Initial state: closed on mobile, open on desktop
-    const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 900);
+  // Initial state: closed on mobile, open on desktop
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 900);
 
-    // Auto-close sidebar on window resize ONLY when crossing the 900px threshold
-    useEffect(() => {
-        const handleResize = () => {
-            if (window.innerWidth > 900) {
-                setIsSidebarOpen(true);
-            } else {
-                setIsSidebarOpen(false);
-            }
-        };
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    // Close sidebar when navigating on mobile
-    useEffect(() => {
-        if (window.innerWidth <= 900) {
-            setIsSidebarOpen(false);
-        }
-    }, [location.pathname]);
-
-    const handleLogout = () => {
-        localStorage.removeItem('auth-token');
-        localStorage.removeItem('user-role');
-        navigate('/login');
+  // Auto-close sidebar on window resize ONLY when crossing the 900px threshold
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 900) {
+        setIsSidebarOpen(true);
+      } else {
+        setIsSidebarOpen(false);
+      }
     };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-    const isActive = (path) => location.pathname === path;
+  // Close sidebar when navigating on mobile
+  useEffect(() => {
+    if (window.innerWidth <= 900) {
+      setIsSidebarOpen(false);
+    }
+  }, [location.pathname]);
 
-    const sidebarLinks = {
-        Volunteer: [
-            { name: 'Home', path: '/', icon: <FaThLarge /> },
-            { name: 'Dashboard', path: '/volunteer-dashboard', icon: <FaThLarge /> },
-            { name: 'My Tasks', path: '/volunteer-tasks', icon: <FaTasks /> },
-            { name: 'My Profile', path: '/volunteer-profile', icon: <FaUser /> },
-            { name: 'Events', path: '/volunteer-events', icon: <FaCalendarAlt /> },
-        ],
-        Admin: [
-            { name: 'Home', path: '/', icon: <FaThLarge /> },
-            { name: 'Dashboard', path: '/admin-dashboard', icon: <FaThLarge /> },
-            { name: 'Volunteer', path: '/admin-volunteers', icon: <FaUser /> },
-            { name: 'Member', path: '/admin-members', icon: <FaUsers /> },
-            { name: 'Donations', path: '/admin-donations', icon: <FaHandHoldingHeart /> },
-        ],
-        Member: [
-            { name: 'Home', path: '/', icon: <FaThLarge /> },
-            { name: 'Dashboard', path: '/member-dashboard', icon: <FaThLarge /> },
-        ],
-        Donor: [
-            { name: 'Home', path: '/', icon: <FaThLarge /> },
-            { name: 'Dashboard', path: '/donor-dashboard', icon: <FaThLarge /> },
-            { name: 'My Donations', path: '/donor-donations', icon: <FaHandHoldingHeart /> },
-            { name: 'Impact Report', path: '/donor-impact', icon: <FaChartBar /> },
-            { name: 'Profile', path: '/donor-profile', icon: <FaUser /> },
-        ],
-        Beneficiary: [
-            { name: 'Home', path: '/', icon: <FaThLarge /> },
-            { name: 'Dashboard', path: '/beneficiary-dashboard', icon: <FaThLarge /> },
-        ]
-    };
+  const handleLogout = () => {
+    localStorage.removeItem("auth-token");
+    localStorage.removeItem("user-role");
+    navigate("/login");
+  };
 
-    const links = sidebarLinks[role] || sidebarLinks['Member'];
+  const isActive = (path) => location.pathname === path;
 
-    // Debug: Ensure role is correct
-    console.log('DashboardLayout Role:', role);
+  const sidebarLinks = {
+    Volunteer: [
+      { name: "Home", path: "/", icon: <FaHome /> },
+      { name: "Dashboard", path: "/volunteer-dashboard", icon: <FaThLarge /> },
+      { name: "My Tasks", path: "/volunteer-tasks", icon: <FaTasks /> },
+      { name: "My Profile", path: "/volunteer-profile", icon: <FaUser /> },
+      { name: "Events", path: "/volunteer-events", icon: <FaCalendarAlt /> },
+    ],
 
-    const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-    const closeSidebar = () => setIsSidebarOpen(false);
+    Admin: [
+      { name: "Home", path: "/", icon: <FaHome /> },
+      { name: "Dashboard", path: "/admin-dashboard", icon: <FaThLarge /> },
+      { name: "Volunteer", path: "/admin-volunteers", icon: <FaUser /> },
+      { name: "Member", path: "/admin-members", icon: <FaUsers /> },
+      {
+        name: "Donations",
+        path: "/admin-donations",
+        icon: <FaHandHoldingHeart />,
+      },
+    ],
 
-    return (
-        <div className="dashboard-layout">
-            {/* Mobile Overlay */}
-            <div
-                className={`sidebar-overlay ${isSidebarOpen ? 'active' : ''}`}
-                onClick={closeSidebar}
-            ></div>
+    Member: [
+      { name: "Home", path: "/", icon: <FaHome /> },
+      { name: "Dashboard", path: "/member-dashboard", icon: <FaThLarge /> },
+    ],
 
-            {/* Sidebar */}
-            <aside className={`sidebar ${isSidebarOpen ? 'open' : 'collapsed'}`}>
-                <div className="sidebar-header">
-                    <button className="mobile-close-btn" onClick={closeSidebar}>
-                        <FaTimes />
-                    </button>
-                </div>
-                <nav className="sidebar-nav">
-                    {links.map((link, index) => (
-                        <Link
-                            key={index}
-                            to={link.path}
-                            className={`nav-link ${isActive(link.path) ? 'active' : ''}`}
-                        >
-                            <span className="nav-icon">{link.icon}</span>
-                            <span className="nav-text">{link.name}</span>
-                        </Link>
-                    ))}
-                </nav>
-            </aside>
+    Donor: [
+      { name: "Home", path: "/", icon: <FaHome /> },
+      { name: "Dashboard", path: "/donor-dashboard", icon: <FaThLarge /> },
+      {
+        name: "My Donations",
+        path: "/donor-donations",
+        icon: <FaHandHoldingHeart />,
+      },
+      { name: "Impact Report", path: "/donor-impact", icon: <FaChartBar /> },
+      { name: "Profile", path: "/donor-profile", icon: <FaUser /> },
+    ],
 
-            {/* Main Content Area */}
-            <div className={`main-wrapper ${!isSidebarOpen ? 'full-width' : ''}`}>
-                {/* Topbar */}
-                <header className="topbar">
-                    <div className="topbar-left">
-                        <button className="menu-toggle-btn" onClick={toggleSidebar}>
-                            <FaBars />
-                        </button>
-                        <div>
-                            <h2>Dashboard</h2>
-                            <p className="welcome-sub">Welcome back, {userName || 'User'}!</p>
-                        </div>
-                    </div>
-                </header>
+    Beneficiary: [
+      { name: "Home", path: "/", icon: <FaHome /> },
+      {
+        name: "Dashboard",
+        path: "/beneficiary-dashboard",
+        icon: <FaThLarge />,
+      },
+    ],
+  };
 
-                {/* Page Content */}
-                <main className="content-area">
-                    {children}
-                </main>
+  const links = sidebarLinks[role] || sidebarLinks["Member"];
+
+  // Debug: Ensure role is correct
+  console.log("DashboardLayout Role:", role);
+
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const closeSidebar = () => setIsSidebarOpen(false);
+
+  return (
+    <div className="dashboard-layout">
+      {/* Mobile Overlay */}
+      <div
+        className={`sidebar-overlay ${isSidebarOpen ? "active" : ""}`}
+        onClick={closeSidebar}
+      ></div>
+
+      {/* Sidebar */}
+      <aside className={`sidebar ${isSidebarOpen ? "open" : "collapsed"}`}>
+        <div className="sidebar-header">
+          <button className="mobile-close-btn" onClick={closeSidebar}>
+            <FaTimes />
+          </button>
+        </div>
+        <nav className="sidebar-nav">
+          {links.map((link, index) => (
+            <Link
+              key={index}
+              to={link.path}
+              className={`nav-link ${isActive(link.path) ? "active" : ""}`}
+            >
+              <span className="nav-icon">{link.icon}</span>
+              <span className="nav-text">{link.name}</span>
+            </Link>
+          ))}
+        </nav>
+      </aside>
+
+      {/* Main Content Area */}
+      <div className={`main-wrapper ${!isSidebarOpen ? "full-width" : ""}`}>
+        {/* Topbar */}
+        <header className="topbar">
+          <div className="topbar-left">
+            <button className="menu-toggle-btn" onClick={toggleSidebar}>
+              <FaBars />
+            </button>
+            <div>
+              <h2>Dashboard</h2>
+              <p className="welcome-sub">Welcome back, {userName || "User"}!</p>
             </div>
+          </div>
+        </header>
 
-            <style>{`
+        {/* Page Content */}
+        <main className="content-area">{children}</main>
+      </div>
+
+      <style>{`
                 :root {
                     --sidebar-width: 250px;
                     --topbar-height: 80px;
@@ -381,8 +396,8 @@ const DashboardLayout = ({ children, role, userName }) => {
                     }
                 }
             `}</style>
-        </div>
-    );
+    </div>
+  );
 };
 
 export default DashboardLayout;

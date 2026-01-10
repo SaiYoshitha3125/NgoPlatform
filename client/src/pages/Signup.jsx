@@ -1,245 +1,275 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { Eye, EyeOff } from "lucide-react";
 
 const Signup = () => {
-    const navigate = useNavigate();
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        role: ''
-    });
-    const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    role: "",
+  });
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setError('');
+  const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-        if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match');
-            return;
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" });
+    setServerError("");
+  };
+
+  const validate = () => {
+    const newErrors = {};
+
+    if (!formData.role) newErrors.role = "Role is required";
+    if (!formData.name) newErrors.name = "Full name is required";
+
+    if (!formData.email) {
+      newErrors.email = "Email is required";
+    } else if (!formData.email.includes("@")) {
+      newErrors.email = "Email must contain @";
+    }
+
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
+
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = "Confirm password is required";
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_SERVER_URL}/api/auth/register`,
+        {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          role: formData.role,
         }
+      );
 
-        try {
-            const res = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/auth/register`, {
-                name: formData.name,
-                email: formData.email,
-                password: formData.password,
-                role: formData.role
-            });
-            localStorage.setItem('auth-token', res.data.token);
-            const userRole = res.data.user.role;
-            localStorage.setItem('user-role', userRole);
+      const role = res.data.user.role;
+      localStorage.setItem("auth-token", res.data.token);
+      localStorage.setItem("user-role", role);
 
-            switch (userRole) {
-                case 'Member':
-                    navigate('/member-dashboard');
-                    break;
-                case 'Volunteer':
-                    navigate('/volunteer-dashboard');
-                    break;
-                case 'Donor':
-                    navigate('/donor-dashboard');
-                    break;
-                case 'Admin':
-                    navigate('/admin-dashboard');
-                    break;
-                default:
-                    navigate('/');
-            }
-        } catch (err) {
-            setError(err.response?.data?.message || 'Registration failed');
-        }
-    };
+      switch (role) {
+        case "Member":
+          navigate("/member-dashboard");
+          break;
+        case "Volunteer":
+          navigate("/volunteer-dashboard");
+          break;
+        case "Donor":
+          navigate("/donor-dashboard");
+          break;
+        case "Admin":
+          navigate("/admin-dashboard");
+          break;
+        default:
+          navigate("/");
+      }
+    } catch (err) {
+      setServerError(err.response?.data?.message || "Registration failed");
+    }
+  };
 
-    return (
-        <div className="auth-container">
-            <div className="auth-card">
-                <h2>Sign Up</h2>
-                {error && <div className="error-message">{error}</div>}
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label htmlFor="role">I am a...</label>
-                        <select
-                            id="role"
-                            name="role"
-                            value={formData.role}
-                            onChange={handleChange}
-                            required
-                            className="form-control"
-                        >
-                            <option value="" disabled>Select Role</option>
-                            <option value="Member">Member</option>
-                            <option value="Volunteer">Volunteer</option>
-                            <option value="Donor">Donor</option>
-                            <option value="Admin">Admin</option>
-                        </select>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="name">Full Name</label>
-                        <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="email">Email</label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="password">Password</label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="confirmPassword">Confirm Password</label>
-                        <input
-                            type="password"
-                            id="confirmPassword"
-                            name="confirmPassword"
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <button type="submit" className="btn btn-primary btn-block">Sign Up</button>
-                </form>
-                <p className="auth-redirect">
-                    Already have an account? <Link to="/login">Sign In</Link>
-                </p>
+  return (
+    <div className="auth-container">
+      <div className="auth-card">
+        <h2>Sign Up</h2>
+
+        {serverError && <div className="error-message">{serverError}</div>}
+
+        <form onSubmit={handleSubmit} noValidate>
+          {/* Role */}
+          <div className="form-group">
+            <label>I am a...</label>
+            <select name="role" value={formData.role} onChange={handleChange}>
+              <option value="">Select Role</option>
+              <option value="Member">Member</option>
+              <option value="Volunteer">Volunteer</option>
+              <option value="Donor">Donor</option>
+              <option value="Admin">Admin</option>
+            </select>
+            {errors.role && <span className="field-error">{errors.role}</span>}
+          </div>
+
+          {/* Name */}
+          <div className="form-group">
+            <label>Full Name</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+            />
+            {errors.name && <span className="field-error">{errors.name}</span>}
+          </div>
+
+          {/* Email */}
+          <div className="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+            />
+            {errors.email && (
+              <span className="field-error">{errors.email}</span>
+            )}
+          </div>
+
+          {/* Password */}
+          <div className="form-group">
+            <label>Password</label>
+            <div className="password-wrapper">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+              />
+              <span
+                className="eye-icon"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </span>
             </div>
+            {errors.password && (
+              <span className="field-error">{errors.password}</span>
+            )}
+          </div>
 
-            <style>{`
+          {/* Confirm Password */}
+          <div className="form-group">
+            <label>Confirm Password</label>
+            <div className="password-wrapper">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+              />
+              <span
+                className="eye-icon"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </span>
+            </div>
+            {errors.confirmPassword && (
+              <span className="field-error">{errors.confirmPassword}</span>
+            )}
+          </div>
+
+          <button type="submit" className="btn btn-primary btn-block">
+            Sign Up
+          </button>
+        </form>
+
+        <p className="auth-redirect">
+          Already have an account? <Link to="/login">Sign In</Link>
+        </p>
+      </div>
+
+      <style>{`
                 .auth-container {
-                    min-height: 80vh;
+                    min-height: 100vh;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    background-color: var(--bg-light);
-                    padding: 2rem;
-                    position: relative;
-                    overflow: hidden;
-                    background-image: 
-                        radial-gradient(circle at 20% 30%, rgba(142, 68, 173, 0.08) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 70%, rgba(241, 196, 15, 0.08) 0%, transparent 50%),
-                        radial-gradient(circle at 50% 50%, rgba(26, 188, 156, 0.05) 0%, transparent 50%);
-                }
-                .auth-container::before {
-                    content: '';
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    background-image: 
-                        radial-gradient(circle, rgba(142, 68, 173, 0.15) 1px, transparent 1px);
-                    background-size: 30px 30px;
-                    opacity: 0.4;
-                    pointer-events: none;
-                }
-                .auth-container::after {
-                    content: '';
-                    position: absolute;
-                    width: 400px;
-                    height: 400px;
-                    border-radius: 50%;
-                    background: radial-gradient(circle, rgba(241, 196, 15, 0.1) 0%, transparent 70%);
-                    top: -200px;
-                    right: -200px;
-                    pointer-events: none;
-                    animation: float 6s ease-in-out infinite;
-                }
-                @keyframes float {
-                    0%, 100% { transform: translate(0, 0) scale(1); }
-                    50% { transform: translate(-20px, 20px) scale(1.1); }
+                    padding: 1rem;
+                    background-color: #f9fafb;
                 }
                 .auth-card {
-                    background: white;
-                    padding: 2.5rem;
+                    background: #fff;
+                    padding: 2rem;
                     border-radius: 10px;
-                    box-shadow: var(--shadow);
                     width: 100%;
-                    max-width: 400px;
-                    position: relative;
-                    z-index: 1;
+                    max-width: 420px;
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
                 }
-                .auth-card h2 {
+                h2 {
                     text-align: center;
-                    margin-bottom: 2rem;
-                    color: var(--primary);
+                    margin-bottom: 1.5rem;
                 }
                 .form-group {
-                    margin-bottom: 1.25rem;
+                    margin-bottom: 1rem;
                 }
-                .form-group label {
-                    display: block;
-                    margin-bottom: 0.5rem;
+                label {
                     font-weight: 500;
-                    color: var(--text-dark);
+                    margin-bottom: 0.4rem;
+                    display: block;
                 }
-                .form-group input,
-                .form-group select {
+                input, select {
                     width: 100%;
-                    padding: 0.75rem;
-                    border: 1px solid #e5e7eb;
+                    padding: 0.7rem 2.5rem 0.7rem 0.7rem;
                     border-radius: 6px;
+                    border: 1px solid #ddd;
                     font-size: 1rem;
-                    transition: border-color 0.2s;
-                    background-color: #fff;
                 }
-                .form-group input:focus,
-                .form-group select:focus {
-                    outline: none;
-                    border-color: var(--secondary);
+                .password-wrapper {
+                    position: relative;
+                }
+                .eye-icon {
+                    position: absolute;
+                    right: 10px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    cursor: pointer;
+                    color: #6b7280;
+                }
+                .eye-icon:hover {
+                    color: #111827;
                 }
                 .btn-block {
                     width: 100%;
                     margin-top: 1rem;
                 }
-                .auth-redirect {
-                    text-align: center;
-                    margin-top: 1.5rem;
-                    font-size: 0.9rem;
-                }
-                .auth-redirect a {
-                    color: var(--secondary);
-                    font-weight: 600;
+                .field-error {
+                    color: #dc2626;
+                    font-size: 0.85rem;
+                    margin-top: 0.3rem;
+                    display: block;
                 }
                 .error-message {
-                    background-color: #fee2e2;
-                    color: #b91c1c;
+                    background: #fee2e2;
+                    color: #991b1b;
                     padding: 0.75rem;
-                    border-radius: 5px;
+                    border-radius: 6px;
                     margin-bottom: 1rem;
                     text-align: center;
+                }
+                .auth-redirect {
+                    text-align: center;
+                    margin-top: 1.2rem;
                     font-size: 0.9rem;
                 }
             `}</style>
-        </div>
-    );
+    </div>
+  );
 };
 
 export default Signup;

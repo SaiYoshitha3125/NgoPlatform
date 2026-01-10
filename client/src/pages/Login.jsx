@@ -9,15 +9,28 @@ const Login = () => {
         password: '',
         role: ''
     });
-    const [error, setError] = useState('');
+    const [errors, setErrors] = useState({});
+    const [serverError, setServerError] = useState('');
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const validate = () => {
+        let tempErrors = {};
+        if (!formData.role) tempErrors.role = "Role is required";
+        if (!formData.email) tempErrors.email = "Email is required";
+        else if (!/\S+@\S+\.\S+/.test(formData.email)) tempErrors.email = "Email is invalid";
+        if (!formData.password) tempErrors.password = "Password is required";
+
+        setErrors(tempErrors);
+        return Object.keys(tempErrors).length === 0;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
+        setServerError('');
+        if (!validate()) return;
         try {
             const res = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/auth/login`, formData);
             localStorage.setItem('auth-token', res.data.token);
@@ -41,9 +54,6 @@ const Login = () => {
                 case 'Donor':
                     navigate('/donor-dashboard');
                     break;
-                case 'Beneficiary':
-                    navigate('/beneficiary-dashboard');
-                    break;
                 case 'Admin':
                     navigate('/admin-dashboard');
                     break;
@@ -53,7 +63,7 @@ const Login = () => {
             }
         } catch (err) {
             console.error('Login error details:', err.response || err);
-            setError(err.response?.data?.message || 'Login failed. Please check your credentials and try again.');
+            setServerError(err.response?.data?.message || 'Login failed. Please check your credentials and try again.');
         }
     };
 
@@ -61,7 +71,7 @@ const Login = () => {
         <div className="auth-container">
             <div className="auth-card">
                 <h2>Login</h2>
-                {error && <div className="error-message">{error}</div>}
+                {serverError && <div className="error-message">{serverError}</div>}
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label htmlFor="role">I am a...</label>
@@ -70,15 +80,16 @@ const Login = () => {
                             name="role"
                             value={formData.role}
                             onChange={handleChange}
-                            required
-                            className="form-control"
+                            className={`form-control ${errors.role ? 'input-error' : ''}`}
                         >
-                            <option value="" disabled>Select Role</option>
+                            <option value="">Select Role</option>
                             <option value="Member">Member</option>
                             <option value="Volunteer">Volunteer</option>
                             <option value="Donor">Donor</option>
                             <option value="Admin">Admin</option>
                         </select>
+
+                        {errors.role && <span className="field-error">{errors.role}</span>}
                     </div>
                     <div className="form-group">
                         <label htmlFor="email">Email</label>
@@ -88,8 +99,9 @@ const Login = () => {
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
-                            required
+                            className={errors.email ? 'input-error' : ''}
                         />
+                        {errors.email && <span className="field-error">{errors.email}</span>}
                     </div>
                     <div className="form-group">
                         <label htmlFor="password">Password</label>
@@ -99,8 +111,9 @@ const Login = () => {
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
-                            required
+                            className={errors.password ? 'input-error' : ''}
                         />
+                        {errors.password && <span className="field-error">{errors.password}</span>}
                     </div>
                     <button type="submit" className="btn btn-primary btn-block">Login</button>
                 </form>
@@ -213,6 +226,20 @@ const Login = () => {
                     margin-bottom: 1rem;
                     text-align: center;
                     font-size: 0.9rem;
+                    border: 1px solid #fecaca;
+                }
+                .field-error {
+                    color: #dc2626;
+                    font-size: 0.75rem;
+                    margin-top: 0.25rem;
+                    display: block;
+                }
+                .input-error {
+                    border-color: #dc2626 !important;
+                }
+                .input-error:focus {
+                    border-color: #dc2626 !important;
+                    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.1) !important;
                 }
             `}</style>
         </div>
