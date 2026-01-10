@@ -22,9 +22,16 @@ const Login = () => {
             const res = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/auth/login`, formData);
             localStorage.setItem('auth-token', res.data.token);
             const userRole = res.data.user.role;
-            localStorage.setItem('user-role', userRole);
 
-            switch (userRole) {
+            // Normalize role to Title Case to ensure consistency (e.g. 'admin' -> 'Admin')
+            const normalizedRole = userRole.charAt(0).toUpperCase() + userRole.slice(1).toLowerCase();
+
+            localStorage.setItem('auth-token', res.data.token);
+            localStorage.setItem('user-role', normalizedRole);
+
+            console.log('Login successful. Role:', normalizedRole);
+
+            switch (normalizedRole) {
                 case 'Member':
                     navigate('/member-dashboard');
                     break;
@@ -41,10 +48,12 @@ const Login = () => {
                     navigate('/admin-dashboard');
                     break;
                 default:
+                    console.warn('Unknown role:', normalizedRole);
                     navigate('/');
             }
         } catch (err) {
-            setError(err.response?.data?.message || 'Login failed');
+            console.error('Login error details:', err.response || err);
+            setError(err.response?.data?.message || 'Login failed. Please check your credentials and try again.');
         }
     };
 

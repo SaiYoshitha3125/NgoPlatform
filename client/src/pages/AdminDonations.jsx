@@ -180,77 +180,89 @@ const AdminDonations = () => {
 
             <style>{`
                 .admin-donations {
-                    max-width: 1400px;
+                    max-width: 100%;
+                    width: 100%;
                 }
 
                 .page-header {
-                    margin-bottom: 2rem;
+                    margin-bottom: 1.5rem;
                 }
 
                 .page-header h1 {
-                    font-size: 2rem;
-                    margin-bottom: 0.5rem;
+                    font-size: 1.8rem;
+                    margin-bottom: 0.25rem;
                     color: #2d3436;
                 }
 
                 .page-header p {
                     color: #636e72;
-                    font-size: 1rem;
+                    font-size: 0.95rem;
+                    margin: 0;
                 }
 
                 .stats-grid {
                     display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                    gap: 1.5rem;
-                    margin-bottom: 2rem;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: 1rem;
+                    margin-bottom: 1.5rem;
                 }
 
                 .stat-card {
                     background: white;
-                    padding: 1.5rem;
-                    border-radius: 12px;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                    padding: 1rem;
+                    border-radius: 10px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
                     display: flex;
                     align-items: center;
-                    gap: 1rem;
+                    gap: 0.8rem;
+                    transition: transform 0.2s;
+                    border: 1px solid #f1f2f6;
+                }
+
+                .stat-card:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
                 }
 
                 .stat-icon {
-                    width: 60px;
-                    height: 60px;
-                    border-radius: 12px;
+                    width: 45px;
+                    height: 45px;
+                    border-radius: 10px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    font-size: 1.5rem;
+                    font-size: 1.2rem;
+                    flex-shrink: 0;
                 }
 
                 .stat-info h3 {
                     margin: 0;
-                    font-size: 1.8rem;
+                    font-size: 1.4rem;
                     color: #2d3436;
+                    line-height: 1.2;
                 }
 
                 .stat-info p {
-                    margin: 0.25rem 0 0 0;
+                    margin: 0;
                     color: #636e72;
-                    font-size: 0.9rem;
+                    font-size: 0.8rem;
                 }
 
                 .filter-bar {
                     display: flex;
-                    gap: 1rem;
-                    margin-bottom: 2rem;
+                    gap: 0.5rem;
+                    margin-bottom: 1.5rem;
                     flex-wrap: wrap;
                 }
 
                 .filter-bar button {
-                    padding: 0.75rem 1.5rem;
-                    border: 2px solid #e1e8ed;
+                    padding: 0.5rem 1rem;
+                    border: 1px solid #e1e8ed;
                     background: white;
-                    border-radius: 8px;
+                    border-radius: 6px;
                     cursor: pointer;
-                    font-weight: 600;
+                    font-weight: 500;
+                    font-size: 0.9rem;
                     transition: all 0.2s;
                 }
 
@@ -267,14 +279,18 @@ const AdminDonations = () => {
 
                 .donations-table {
                     background: white;
-                    border-radius: 12px;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                    border-radius: 10px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
                     overflow: hidden;
+                    width: 100%;
+                    overflow-x: auto;
+                    border: 1px solid #f1f2f6;
                 }
 
                 table {
                     width: 100%;
                     border-collapse: collapse;
+                    min-width: 800px; /* Reduced min-width */
                 }
 
                 thead {
@@ -282,85 +298,139 @@ const AdminDonations = () => {
                 }
 
                 th {
-                    padding: 1rem;
+                    padding: 0.8rem 1rem;
                     text-align: left;
                     font-weight: 600;
                     color: #2d3436;
                     border-bottom: 2px solid #e1e8ed;
+                    white-space: nowrap;
+                    font-size: 0.9rem;
                 }
 
                 td {
-                    padding: 1rem;
+                    padding: 0.8rem 1rem;
                     border-bottom: 1px solid #f1f3f5;
                     color: #636e72;
+                    vertical-align: middle;
+                    font-size: 0.9rem;
+                }
+
+                tbody tr:nth-child(even) {
+                    background-color: #fcfcfc;
                 }
 
                 tbody tr:hover {
-                    background: #f8f9fa;
+                    background-color: #f1f2f6;
                 }
 
                 .donor-info {
                     display: flex;
                     align-items: center;
-                    gap: 0.75rem;
+                    gap: 0.5rem;
+                    font-weight: 500;
                 }
 
                 .donor-icon {
                     color: #6c5ce7;
-                    font-size: 1rem;
+                    font-size: 0.9rem;
+                    flex-shrink: 0;
                 }
 
                 .amount {
                     font-weight: 700;
                     color: #4caf50;
-                    font-size: 1.1rem;
                 }
 
                 .transaction-id {
                     font-family: monospace;
-                    font-size: 0.85rem;
+                    font-size: 0.8rem;
                     color: #999;
+                    background: #f1f2f6;
+                    padding: 2px 6px;
+                    border-radius: 4px;
                 }
 
                 .date-info {
                     display: flex;
                     align-items: center;
-                    gap: 0.5rem;
+                    gap: 0.4rem;
+                    white-space: nowrap;
                 }
 
                 .date-icon {
                     color: #6c5ce7;
-                    font-size: 0.9rem;
+                    font-size: 0.8rem;
                 }
 
                 .status-badge {
                     display: inline-flex;
                     align-items: center;
-                    gap: 0.5rem;
-                    padding: 0.4rem 0.8rem;
-                    border-radius: 20px;
-                    font-size: 0.85rem;
+                    gap: 0.4rem;
+                    padding: 0.3rem 0.6rem;
+                    border-radius: 15px;
+                    font-size: 0.8rem;
                     font-weight: 600;
+                    white-space: nowrap;
                 }
 
                 .loading, .no-data {
                     text-align: center;
-                    padding: 3rem;
+                    padding: 2rem;
                     color: #636e72;
-                    font-size: 1.1rem;
+                    font-size: 1rem;
                 }
 
                 @media (max-width: 768px) {
-                    .donations-table {
-                        overflow-x: auto;
+                    .page-header h1 {
+                        font-size: 1.5rem;
+                    }
+                    
+                    .stats-grid {
+                        grid-template-columns: repeat(2, 1fr); /* 2 per row on mobile for better space usage, if they fit */
+                        gap: 0.8rem;
                     }
 
-                    table {
-                        min-width: 800px;
+                    .stat-card {
+                        padding: 0.8rem;
+                        flex-direction: column;
+                        align-items: flex-start;
+                        gap: 0.5rem;
+                    }
+                    
+                    .stat-icon {
+                        width: 35px;
+                        height: 35px;
+                        font-size: 1rem;
+                    }
+                    
+                    .stat-info h3 {
+                        font-size: 1.2rem;
+                    }
+
+                    .filter-bar button {
+                        padding: 0.4rem 0.8rem;
+                        font-size: 0.85rem;
+                        flex: 1; /* Distribute evenly */
+                        text-align: center;
+                    }
+                    
+                    th, td {
+                        padding: 0.6rem 0.8rem;
+                    }
+                }
+                
+                @media (max-width: 480px) {
+                    .stats-grid {
+                        grid-template-columns: 1fr; /* Stack on very small screens */
+                    }
+                    
+                    .stat-card {
+                        flex-direction: row; /* Revert to row for full width cards */
+                        align-items: center;
                     }
                 }
             `}</style>
-        </DashboardLayout>
+        </DashboardLayout >
     );
 };
 

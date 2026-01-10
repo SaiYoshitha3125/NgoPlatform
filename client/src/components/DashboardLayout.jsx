@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
     FaThLarge,
@@ -13,12 +13,37 @@ import {
     FaHandHoldingHeart,
     FaImages,
     FaCertificate,
-    FaChartBar
+    FaChartBar,
+    FaBars,
+    FaTimes
 } from 'react-icons/fa';
 
 const DashboardLayout = ({ children, role, userName }) => {
     const navigate = useNavigate();
     const location = useLocation();
+
+    // Initial state: closed on mobile, open on desktop
+    const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 900);
+
+    // Auto-close sidebar on window resize ONLY when crossing the 900px threshold
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth > 900) {
+                setIsSidebarOpen(true);
+            } else {
+                setIsSidebarOpen(false);
+            }
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // Close sidebar when navigating on mobile
+    useEffect(() => {
+        if (window.innerWidth <= 900) {
+            setIsSidebarOpen(false);
+        }
+    }, [location.pathname]);
 
     const handleLogout = () => {
         localStorage.removeItem('auth-token');
@@ -30,9 +55,9 @@ const DashboardLayout = ({ children, role, userName }) => {
 
     const sidebarLinks = {
         Volunteer: [
+            { name: 'Home', path: '/', icon: <FaThLarge /> },
             { name: 'Dashboard', path: '/volunteer-dashboard', icon: <FaThLarge /> },
             { name: 'My Tasks', path: '/volunteer-tasks', icon: <FaTasks /> },
-
             { name: 'My Profile', path: '/volunteer-profile', icon: <FaUser /> },
             { name: 'Events', path: '/volunteer-events', icon: <FaCalendarAlt /> },
         ],
@@ -41,15 +66,14 @@ const DashboardLayout = ({ children, role, userName }) => {
             { name: 'Dashboard', path: '/admin-dashboard', icon: <FaThLarge /> },
             { name: 'Volunteer', path: '/admin-volunteers', icon: <FaUser /> },
             { name: 'Member', path: '/admin-members', icon: <FaUsers /> },
-            { name: 'Applications', path: '/admin-applications', icon: <FaFileAlt /> },
             { name: 'Donations', path: '/admin-donations', icon: <FaHandHoldingHeart /> },
         ],
-        // Default fallbacks for other roles can be added here
         Member: [
             { name: 'Home', path: '/', icon: <FaThLarge /> },
             { name: 'Dashboard', path: '/member-dashboard', icon: <FaThLarge /> },
         ],
         Donor: [
+            { name: 'Home', path: '/', icon: <FaThLarge /> },
             { name: 'Dashboard', path: '/donor-dashboard', icon: <FaThLarge /> },
             { name: 'My Donations', path: '/donor-donations', icon: <FaHandHoldingHeart /> },
             { name: 'Impact Report', path: '/donor-impact', icon: <FaChartBar /> },
@@ -61,16 +85,28 @@ const DashboardLayout = ({ children, role, userName }) => {
         ]
     };
 
-    const links = sidebarLinks[role] || sidebarLinks['Member']; // Default to Member if role not found or generic
+    const links = sidebarLinks[role] || sidebarLinks['Member'];
+
     // Debug: Ensure role is correct
     console.log('DashboardLayout Role:', role);
 
+    const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+    const closeSidebar = () => setIsSidebarOpen(false);
+
     return (
         <div className="dashboard-layout">
+            {/* Mobile Overlay */}
+            <div
+                className={`sidebar-overlay ${isSidebarOpen ? 'active' : ''}`}
+                onClick={closeSidebar}
+            ></div>
+
             {/* Sidebar */}
-            <aside className="sidebar">
+            <aside className={`sidebar ${isSidebarOpen ? 'open' : 'collapsed'}`}>
                 <div className="sidebar-header">
-                    {/* Logo removed as requested */}
+                    <button className="mobile-close-btn" onClick={closeSidebar}>
+                        <FaTimes />
+                    </button>
                 </div>
                 <nav className="sidebar-nav">
                     {links.map((link, index) => (
@@ -84,25 +120,20 @@ const DashboardLayout = ({ children, role, userName }) => {
                         </Link>
                     ))}
                 </nav>
-                <div className="sidebar-footer">
-                    {/* Optional footer content */}
-                </div>
             </aside>
 
             {/* Main Content Area */}
-            <div className="main-wrapper">
+            <div className={`main-wrapper ${!isSidebarOpen ? 'full-width' : ''}`}>
                 {/* Topbar */}
                 <header className="topbar">
                     <div className="topbar-left">
-                        <h2>Dashboard</h2>
-                        <p className="welcome-sub">Welcome back, {userName || 'User'}!</p>
-                    </div>
-                    <div className="topbar-right">
-                        {role !== 'Volunteer' && (
-                            <button onClick={handleLogout} className="btn-logout" title="Logout">
-                                Logout
-                            </button>
-                        )}
+                        <button className="menu-toggle-btn" onClick={toggleSidebar}>
+                            <FaBars />
+                        </button>
+                        <div>
+                            <h2>Dashboard</h2>
+                            <p className="welcome-sub">Welcome back, {userName || 'User'}!</p>
+                        </div>
                     </div>
                 </header>
 
@@ -114,19 +145,45 @@ const DashboardLayout = ({ children, role, userName }) => {
 
             <style>{`
                 :root {
-                   --sidebar-width: 250px;
-                   --topbar-height: 80px;
-                   --bg-main: #f8f9fa;
-                   --primary-color: #6c5ce7; /* Example purple from image */
-                   --text-color: #333;
-                   --muted-text: #666;
+                    --sidebar-width: 250px;
+                    --topbar-height: 80px;
+                    --bg-main: #f8f9fa;
+                    --primary-color: #6c5ce7;
+                    --text-color: #333;
+                    --muted-text: #666;
                 }
 
                 .dashboard-layout {
                     display: flex;
                     min-height: 100vh;
                     background-color: var(--bg-main);
-                    font-family: 'Segoe UI', sans-serif;
+                    font-family: 'Outfit', sans-serif;
+                }
+
+                /* Mobile Overlay */
+                .sidebar-overlay {
+                    display: none;
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0,0,0,0.5);
+                    z-index: 1000;
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                    pointer-events: none;
+                    backdrop-filter: blur(2px);
+                }
+                
+                @media (max-width: 900px) {
+                    .sidebar-overlay {
+                        display: block;
+                    }
+                    .sidebar-overlay.active {
+                        opacity: 1;
+                        pointer-events: auto;
+                    }
                 }
 
                 /* Sidebar Styles */
@@ -138,43 +195,66 @@ const DashboardLayout = ({ children, role, userName }) => {
                     flex-direction: column;
                     position: fixed;
                     height: 100vh;
-                    z-index: 100;
+                    z-index: 1001;
+                    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    left: 0;
+                    top: 0;
+                }
+                
+                @media (max-width: 900px) {
+                    .sidebar {
+                        transform: translateX(-100%);
+                    }
+                    .sidebar.open {
+                        transform: translateX(0);
+                        box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+                    }
+                }
+                
+                @media (min-width: 901px) {
+                    .sidebar.collapsed {
+                        transform: translateX(-100%);
+                    }
+                    .sidebar.open {
+                        transform: translateX(0);
+                    }
                 }
 
                 .sidebar-header {
-                    padding: 1.5rem;
+                    padding: 1rem;
                     display: flex;
+                    justify-content: flex-end;
+                    min-height: 60px;
                     align-items: center;
-                    justify-content: center;
                 }
 
-                .sidebar-logo {
-                    text-decoration: none;
-                    text-align: center;
+                .mobile-close-btn {
+                    background: none;
+                    border: none;
+                    font-size: 1.5rem;
+                    color: var(--text-color);
+                    cursor: pointer;
+                    padding: 0.5rem;
+                    display: none;
                 }
-
-                .logo-text {
-                    font-size: 1.8rem;
-                    font-weight: bold;
-                    color: #4834d4; /* Deep purple */
-                    display: block;
-                }
-                .logo-sub {
-                    font-size: 0.8rem;
-                    color: #666;
-                    letter-spacing: 2px;
-                    text-transform: uppercase;
+                
+                @media (max-width: 900px) {
+                    .mobile-close-btn {
+                        display: block;
+                    }
                 }
 
                 .sidebar-nav {
                     padding: 1rem;
                     flex: 1;
+                    overflow-y: auto;
+                    -webkit-overflow-scrolling: touch;
                 }
 
                 .nav-link {
                     display: flex;
                     align-items: center;
-                    padding: 0.8rem 1rem;
+                    padding: 1rem;
                     text-decoration: none;
                     color: var(--text-color);
                     border-radius: 8px;
@@ -188,15 +268,17 @@ const DashboardLayout = ({ children, role, userName }) => {
                 }
 
                 .nav-link.active {
-                    background-color: #e0dcfc; /* Light purple bg */
+                    background-color: #e0dcfc;
                     color: var(--primary-color);
                     font-weight: 600;
                 }
 
                 .nav-icon {
                     margin-right: 12px;
-                    font-size: 1.1rem;
+                    font-size: 1.25rem;
+                    min-width: 25px;
                     display: flex;
+                    justify-content: center;
                 }
 
                 /* Main Wrapper */
@@ -205,6 +287,18 @@ const DashboardLayout = ({ children, role, userName }) => {
                     margin-left: var(--sidebar-width);
                     display: flex;
                     flex-direction: column;
+                    width: 100%;
+                    transition: margin-left 0.3s ease;
+                }
+                
+                .main-wrapper.full-width {
+                    margin-left: 0;
+                }
+                
+                @media (max-width: 900px) {
+                    .main-wrapper {
+                        margin-left: 0 !important;
+                    }
                 }
 
                 /* Topbar */
@@ -216,6 +310,25 @@ const DashboardLayout = ({ children, role, userName }) => {
                     align-items: center;
                     padding: 0 2rem;
                     border-bottom: 1px solid #eee;
+                    position: sticky;
+                    top: 0;
+                    z-index: 900;
+                }
+
+                .topbar-left {
+                    display: flex;
+                    align-items: center;
+                    gap: 1rem;
+                }
+
+                .menu-toggle-btn {
+                    background: none;
+                    border: none;
+                    font-size: 1.6rem;
+                    color: var(--text-color);
+                    cursor: pointer;
+                    padding: 0.5rem;
+                    display: block;
                 }
 
                 .topbar-left h2 {
@@ -229,69 +342,43 @@ const DashboardLayout = ({ children, role, userName }) => {
                     font-size: 0.9rem;
                 }
 
-                .topbar-right {
-                    display: flex;
-                    align-items: center;
-                    gap: 1.5rem;
-                }
-
-                .search-bar {
-                    position: relative;
-                    background: #f1f2f6;
-                    padding: 0.5rem 1rem;
-                    border-radius: 20px;
-                    display: flex;
-                    align-items: center;
-                    width: 250px;
-                }
-
-                .search-icon {
-                    color: #999;
-                    margin-right: 0.5rem;
-                }
-
-                .search-bar input {
-                    border: none;
-                    background: transparent;
-                    outline: none;
-                    width: 100%;
-                }
-
-                .notification-icon {
-                    position: relative;
-                    font-size: 1.2rem;
-                    color: var(--muted-text);
-                    cursor: pointer;
-                }
-
-                .badge {
-                    position: absolute;
-                    top: -8px;
-                    right: -8px;
-                    background: #ff4757;
-                    color: white;
-                    font-size: 0.7rem;
-                    border-radius: 50%;
-                    padding: 2px 5px;
-                }
-
-                .btn-logout {
-                    background: #ff4757;
-                    color: white;
-                    border: none;
-                    padding: 0.5rem 1rem;
-                    border-radius: 6px;
-                    cursor: pointer;
-                    font-weight: 600;
-                    transition: background 0.2s;
-                }
-                .btn-logout:hover {
-                    background: #ff6b81;
-                }
-            /* Content Area */
+                /* Content Area */
                 .content-area {
                     padding: 2rem;
                     flex: 1;
+                    overflow-x: hidden;
+                    width: 100%;
+                }
+
+                @media (max-width: 480px) {
+                    :root {
+                        --topbar-height: 70px;
+                    }
+
+                    .topbar {
+                        padding: 0 1rem;
+                    }
+
+                    .topbar-left h2 {
+                        font-size: 1.2rem;
+                    }
+
+                    .welcome-sub {
+                        font-size: 0.8rem;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        max-width: 150px;
+                    }
+
+                    .content-area {
+                        padding: 1rem;
+                    }
+
+                    .sidebar {
+                        width: 80%;
+                        max-width: 300px;
+                    }
                 }
             `}</style>
         </div>

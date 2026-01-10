@@ -47,8 +47,8 @@ const Navbar = () => {
                         </>
                     ) : (
                         <div className="auth-buttons">
-                            <Link to="/login" className="btn btn-outline btn-sm" onClick={toggleMenu}>Login</Link>
-                            <Link to="/signup" className="btn btn-primary btn-sm" onClick={toggleMenu}>Sign Up</Link>
+                            <Link to="/login" className="btn btn-outline btn-sm" onClick={toggleMenu}> Login </Link>
+                            <Link to="/signup" className="btn btn-primary btn-sm" onClick={toggleMenu}> Sign Up </Link>
                         </div>
                     )}
                 </div>

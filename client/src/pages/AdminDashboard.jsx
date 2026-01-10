@@ -95,24 +95,7 @@ const AdminDashboard = () => {
 
                 {/* Second Row Widgets */}
                 <div className="widgets-grid">
-                    {/* Applications */}
-                    <div className="widget-card">
-                        <div className="widget-header">
-                            <h3><FaChartLine style={{ color: '#ff9800' }} /> Applications</h3>
-                        </div>
-                        <div className="stat-row">
-                            <span>Pending Review</span>
-                            <span className="val warning">{stats.pendingVolunteers}</span>
-                        </div>
-                        <div className="stat-row">
-                            <span>Approved</span>
-                            <span className="val success">{stats.totalVolunteers - stats.pendingVolunteers}</span>
-                        </div>
-                        <div className="stat-row">
-                            <span>Total Volunteers</span>
-                            <span className="val">{stats.totalVolunteers}</span>
-                        </div>
-                    </div>
+                    {/* Applications widget removed */}
 
                     {/* Live Stats */}
                     <div className="widget-card">
@@ -314,8 +297,9 @@ const AdminDashboard = () => {
                      justify-content: center;
                 }
                 
-                /* Helper component for missing icon */
-                const FaFileAltIcon = () => <FaChartLine style={{color: '#ff9800'}} /> // Placeholder
+                @media (max-width: 900px) {
+                    .charts-grid { grid-template-columns: 1fr; }
+                }
             `}</style>
         </DashboardLayout>
     );

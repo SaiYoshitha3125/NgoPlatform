@@ -27,7 +27,7 @@ function App() {
 
   return (
     <div className="app">
-      <Navbar />
+      {!isDashboard && <Navbar />}
       <main className="main-content">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -44,8 +44,6 @@ function App() {
           <Route path="/volunteer-dashboard" element={<VolunteerDashboard />} />
           <Route path="/volunteer-tasks" element={<VolunteerDashboard />} />
           <Route path="/volunteer-profile" element={<VolunteerDashboard />} />
-          <Route path="/volunteer-donations" element={<VolunteerDashboard />} />
-          <Route path="/volunteer-impact" element={<VolunteerDashboard />} />
           <Route path="/volunteer-events" element={<VolunteerDashboard />} />
           <Route path="/donor-dashboard" element={<DonorDashboard />} />
           <Route path="/donor-donations" element={<DonorDashboard />} />

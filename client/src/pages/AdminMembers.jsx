@@ -113,6 +113,7 @@ const AdminMembers = () => {
             <style>{`
                 .admin-members {
                     max-width: 1400px;
+                    width: 100%;
                 }
 
                 .page-header {
@@ -162,11 +163,14 @@ const AdminMembers = () => {
                     border-radius: 12px;
                     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
                     overflow: hidden;
+                    overflow-x: auto;
+                    width: 100%;
                 }
 
                 .members-table {
                     width: 100%;
                     border-collapse: collapse;
+                    min-width: 800px;
                 }
 
                 .members-table thead {
@@ -179,6 +183,7 @@ const AdminMembers = () => {
                     font-weight: 600;
                     color: #2d3436;
                     border-bottom: 2px solid #e1e8ed;
+                    white-space: nowrap;
                 }
 
                 .members-table tbody tr {
@@ -193,12 +198,14 @@ const AdminMembers = () => {
                 .members-table td {
                     padding: 1rem 1.5rem;
                     color: #636e72;
+                    vertical-align: middle;
                 }
 
                 .member-name {
                     display: flex;
                     align-items: center;
                     gap: 1rem;
+                    font-weight: 500;
                 }
 
                 .avatar {
@@ -212,6 +219,7 @@ const AdminMembers = () => {
                     justify-content: center;
                     font-weight: bold;
                     font-size: 1.1rem;
+                    flex-shrink: 0;
                 }
 
                 .email-cell, .date-cell {
@@ -223,6 +231,7 @@ const AdminMembers = () => {
                 .email-cell .icon, .date-cell .icon {
                     color: #6c5ce7;
                     font-size: 0.9rem;
+                    flex-shrink: 0;
                 }
 
                 .role-badge {
@@ -233,6 +242,7 @@ const AdminMembers = () => {
                     border-radius: 20px;
                     font-size: 0.85rem;
                     font-weight: 600;
+                    white-space: nowrap;
                 }
 
                 .loading, .no-data {
@@ -241,8 +251,20 @@ const AdminMembers = () => {
                     color: #636e72;
                     font-size: 1.1rem;
                 }
+
+                @media (max-width: 768px) {
+                    .page-header h1 {
+                        font-size: 1.6rem;
+                    }
+
+                    .stats-bar {
+                        flex-direction: column;
+                        gap: 1rem;
+                        padding: 1rem;
+                    }
+                }
             `}</style>
-        </DashboardLayout>
+        </DashboardLayout >
     );
 };
 

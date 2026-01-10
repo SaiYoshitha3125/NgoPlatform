@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import { FaHandHoldingHeart, FaUser, FaHistory, FaBullseye, FaArrowRight, FaChartBar, FaGlobe } from 'react-icons/fa';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const DonorDashboard = () => {
     const location = useLocation();
@@ -176,44 +177,84 @@ const DonorDashboard = () => {
         </div>
     );
 
-    const renderImpact = () => (
-        <div className="donor-impact-view">
-            <header className="page-header">
-                <h1>Impact Report</h1>
-                <p>See the tangible difference your support is making</p>
-            </header>
+    const renderImpact = () => {
+        // Group donations by month for the graph
+        const chartData = data.donationHistory.reduce((acc, donation) => {
+            const date = new Date(donation.date);
+            const month = date.toLocaleString('default', { month: 'short' });
+            const existing = acc.find(item => item.name === month);
+            if (existing) {
+                existing.amount += donation.amount;
+            } else {
+                acc.push({ name: month, amount: donation.amount });
+            }
+            return acc;
+        }, []).reverse();
 
-            <div className="impact-grid">
-                <div className="impact-card">
-                    <FaGlobe className="impact-icon" />
-                    <h3>Global Reach</h3>
-                    <p>Your donations have helped support initiatives in <strong>3 regions</strong> across the country.</p>
+        return (
+            <div className="donor-impact-view">
+                <header className="page-header">
+                    <h1>Impact Report</h1>
+                    <p>See the tangible difference your support is making</p>
+                </header>
+
+                <div className="impact-grid">
+                    <div className="impact-card">
+                        <FaGlobe className="impact-icon" />
+                        <h3>Global Reach</h3>
+                        <p>Your donations have helped support initiatives in <strong>3 regions</strong> across the country.</p>
+                    </div>
+                    <div className="impact-card">
+                        <FaUser className="impact-icon" />
+                        <h3>Lives Touched</h3>
+                        <p>Estimated <strong>{(data.totalDonated / 500).toFixed(0)} lives</strong> impacted through direct aid and support programs.</p>
+                    </div>
+                    <div className="impact-card">
+                        <FaChartBar className="impact-icon" />
+                        <h3>Efficiency</h3>
+                        <p><strong>95%</strong> of your donation goes directly to the field, ensuring maximum impact.</p>
+                    </div>
                 </div>
-                <div className="impact-card">
-                    <FaUser className="impact-icon" />
-                    <h3>Lives Touched</h3>
-                    <p>Estimated <strong>{(data.totalDonated / 500).toFixed(0)} lives</strong> impacted through direct aid and support programs.</p>
+
+                <div className="dashboard-section chart-section" style={{ marginTop: '2rem' }}>
+                    <div className="section-header">
+                        <FaChartBar />
+                        <h2>Donation Trend</h2>
+                    </div>
+                    <div className="chart-container" style={{ width: '100%', height: 300 }}>
+                        {chartData.length > 0 ? (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={chartData}>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#636e72' }} />
+                                    <YAxis hide={window.innerWidth < 480} axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#636e72' }} />
+                                    <Tooltip
+                                        cursor={{ fill: '#f1f2f6' }}
+                                        contentStyle={{ borderRadius: '10px', border: 'none', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}
+                                    />
+                                    <Bar dataKey="amount" fill="#6c5ce7" radius={[4, 4, 0, 0]} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        ) : (
+                            <p style={{ textAlign: 'center', padding: '2rem', color: '#888' }}>Not enough data to show trends.</p>
+                        )}
+                    </div>
                 </div>
-                <div className="impact-card">
-                    <FaChartBar className="impact-icon" />
-                    <h3>Efficiency</h3>
-                    <p><strong>95%</strong> of your donation goes directly to the field, ensuring maximum impact.</p>
-                </div>
+
+                <section className="dashboard-section" style={{ marginTop: '2rem' }}>
+                    <div className="section-header">
+                        <FaBullseye />
+                        <h2>Project Highlights</h2>
+                    </div>
+                    <p className="highlight-text">
+                        Thanks to donors like you, we've able to fund critical projects this year including
+                        clean water initiatives, education supplies for underfunded schools, and emergency
+                        medical relief camps. Your consistency allows us to plan for long-term sustainable change.
+                    </p>
+                </section>
             </div>
-
-            <section className="dashboard-section" style={{ marginTop: '2rem' }}>
-                <div className="section-header">
-                    <FaBullseye />
-                    <h2>Project Highlights</h2>
-                </div>
-                <p style={{ color: '#666', lineHeight: '1.6' }}>
-                    Thanks to donors like you, we've able to fund critical projects this year including
-                    clean water initiatives, education supplies for underfunded schools, and emergency
-                    medical relief camps. Your consistency allows us to plan for long-term sustainable change.
-                </p>
-            </section>
-        </div>
-    );
+        );
+    };
 
     const renderProfile = () => (
         <div className="donor-profile-view">
@@ -277,58 +318,63 @@ const DonorDashboard = () => {
                     margin-bottom: 2.5rem;
                 }
                 .page-header h1 {
-                    font-size: 2.2rem;
+                    font-size: clamp(1.5rem, 5vw, 2.2rem);
                     color: #2d3436;
                     margin-bottom: 0.5rem;
                 }
                 .page-header p {
                     color: #636e72;
-                    font-size: 1.1rem;
+                    font-size: clamp(0.9rem, 2.5vw, 1.1rem);
                 }
 
                 /* Stats Grid */
                 .stats-grid {
                     display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
                     gap: 1.5rem;
                     margin-bottom: 2.5rem;
                 }
                 .stat-card {
                     background: white;
-                    padding: 1.5rem 2rem;
+                    padding: 1.5rem;
                     border-radius: 15px;
                     display: flex;
                     align-items: center;
-                    gap: 1.5rem;
+                    gap: 1.2rem;
                     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
                     border: 1px solid #f1f2f6;
                 }
                 .stat-icon {
-                    width: 60px;
-                    height: 60px;
+                    width: 50px;
+                    height: 50px;
                     border-radius: 50%;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    font-size: 1.8rem;
+                    font-size: 1.5rem;
+                    flex-shrink: 0;
                 }
-                .total-donation .stat-icon { background: #e0dcfc; color: #6c5ce7; }
-                .donor-profile .stat-icon { background: #f1f2f6; color: #2d3436; }
-                .stat-info h3 { font-size: 1.6rem; margin: 0; color: #2d3436; }
-                .stat-info p { margin: 0; color: #636e72; font-size: 0.9rem; }
+                .donor-profile .stat-info h3 {
+                    font-size: 1.1rem;
+                    font-family: 'Inter', 'Outfit', sans-serif;
+                    letter-spacing: -0.01em;
+                    color: #4b4b4b;
+                    font-weight: 500;
+                }
+                .stat-info h3 { font-size: 1.4rem; margin: 0; color: #2d3436; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+                .stat-info p { margin: 0; color: #636e72; font-size: 0.85rem; }
 
                 /* Dashboard Grid */
                 .dashboard-grid {
                     display: grid;
-                    grid-template-columns: 1fr 1fr;
+                    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
                     gap: 2rem;
                 }
-                @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
 
                 .dashboard-section {
                     background: white;
                     border-radius: 15px;
-                    padding: 2rem;
+                    padding: clamp(1.2rem, 3vw, 2rem);
                     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
                     border: 1px solid #f1f2f6;
                 }
@@ -339,7 +385,7 @@ const DonorDashboard = () => {
                     margin-bottom: 1.5rem;
                     color: #6c5ce7;
                 }
-                .section-header h2 { font-size: 1.3rem; margin: 0; color: #2d3436; }
+                .section-header h2 { font-size: 1.2rem; margin: 0; color: #2d3436; }
 
                 /* Works List */
                 .works-list { display: flex; flex-direction: column; gap: 1rem; }
@@ -353,35 +399,39 @@ const DonorDashboard = () => {
                     transition: all 0.2s;
                 }
                 .work-item:hover { transform: translateX(5px); background: #f1f2f6; }
-                .work-dot { width: 10px; height: 10px; border-radius: 50%; background: #6c5ce7; }
-                .work-content { flex: 1; }
-                .work-content h4 { margin: 0; font-size: 1rem; color: #2d3436; }
-                .work-content p { margin: 0.2rem 0 0; font-size: 0.85rem; color: #636e72; }
-                .arrow { color: #dfe6e9; font-size: 0.8rem; }
+                .work-dot { width: 8px; height: 8px; border-radius: 50%; background: #6c5ce7; flex-shrink: 0; }
+                .work-content { flex: 1; overflow: hidden; }
+                .work-content h4 { margin: 0; font-size: 0.95rem; color: #2d3436; }
+                .work-content p { margin: 0.2rem 0 0; font-size: 0.8rem; color: #636e72; }
+                .arrow { color: #dfe6e9; font-size: 0.8rem; flex-shrink: 0; }
 
                 /* Tables */
-                .history-table-wrapper { overflow-x: auto; }
-                .history-table { width: 100%; border-collapse: collapse; }
+                .history-table-wrapper { 
+                    margin: 0 -1.2rem;
+                    padding: 0 1.2rem;
+                    overflow-x: auto; 
+                }
+                .history-table { width: 100%; border-collapse: collapse; min-width: 400px; }
                 .history-table th {
                     text-align: left;
                     padding: 1rem 0.5rem;
-                    font-size: 0.85rem;
+                    font-size: 0.8rem;
                     color: #636e72;
                     border-bottom: 2px solid #f1f2f6;
                     font-weight: 600;
                 }
                 .history-table td {
-                    padding: 1.2rem 0.5rem;
+                    padding: 1rem 0.5rem;
                     border-bottom: 1px solid #f1f2f6;
-                    font-size: 0.95rem;
+                    font-size: 0.85rem;
                 }
                 .amount { font-weight: 600; color: #2d3436; }
-                .tx-id { font-family: monospace; background: #eee; padding: 2px 5px; border-radius: 4px; font-size: 0.85rem; }
+                .tx-id { font-family: monospace; background: #eee; padding: 2px 5px; border-radius: 4px; font-size: 0.75rem; }
                 
                 .status {
-                    padding: 0.3rem 0.7rem;
+                    padding: 0.2rem 0.6rem;
                     border-radius: 20px;
-                    font-size: 0.75rem;
+                    font-size: 0.7rem;
                     font-weight: 600;
                     text-transform: capitalize;
                 }
@@ -392,20 +442,32 @@ const DonorDashboard = () => {
                 /* Impact Grid */
                 .impact-grid {
                     display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-                    gap: 2rem;
+                    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+                    gap: 1.5rem;
                 }
                 .impact-card {
                     background: white;
-                    padding: 2rem;
+                    padding: 2rem 1.5rem;
                     border-radius: 12px;
                     text-align: center;
                     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
                     border: 1px solid #f1f2f6;
                 }
-                .impact-icon { font-size: 2.5rem; color: #6c5ce7; margin-bottom: 1rem; }
-                .impact-card h3 { color: #2d3436; margin-bottom: 1rem; }
-                .impact-card p { color: #636e72; line-height: 1.5; }
+                .impact-icon { font-size: 2.2rem; color: #6c5ce7; margin-bottom: 1rem; }
+                .impact-card h3 { font-size: 1.2rem; color: #2d3436; margin-bottom: 0.8rem; }
+                .impact-card p { font-size: 0.9rem; color: #636e72; line-height: 1.6; }
+
+                /* Chart */
+                .chart-container {
+                    margin-top: 1rem;
+                }
+
+                /* Highlights */
+                .highlight-text {
+                    color: #666;
+                    line-height: 1.7;
+                    font-size: 0.95rem;
+                }
 
                 /* Profile */
                 .profile-details { max-width: 600px; }
@@ -414,16 +476,32 @@ const DonorDashboard = () => {
                     justify-content: space-between;
                     padding: 1rem 0;
                     border-bottom: 1px solid #eee;
+                    font-size: 0.95rem;
                 }
                 .profile-row label { font-weight: 600; color: #636e72; }
+                .profile-row div { 
+                    font-family: 'Inter', 'Outfit', sans-serif;
+                    color: #4b4b4b;
+                    font-weight: 500;
+                }
                 .btn-edit {
                     background: #6c5ce7;
                     color: white;
                     border: none;
                     padding: 0.8rem 1.5rem;
-                    border-radius: 6px;
+                    border-radius: 8px;
                     cursor: pointer;
                     font-weight: 600;
+                    width: 100%;
+                }
+
+                @media (max-width: 600px) {
+                    .dashboard-grid { grid-template-columns: 1fr; }
+                    .stats-grid { grid-template-columns: 1fr; }
+                    .page-header { margin-bottom: 1.5rem; }
+                    .impact-grid { grid-template-columns: 1fr; }
+                    .profile-row { flex-direction: column; gap: 0.5rem; }
+                    .profile-row div { font-weight: 500; }
                 }
             `}</style>
         </DashboardLayout>

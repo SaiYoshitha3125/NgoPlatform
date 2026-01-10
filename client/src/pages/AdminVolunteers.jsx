@@ -129,6 +129,7 @@ const AdminVolunteers = () => {
             <style>{`
                 .admin-volunteers {
                     max-width: 1400px;
+                    width: 100%;
                 }
 
                 .notification {
@@ -181,37 +182,9 @@ const AdminVolunteers = () => {
                     font-size: 1rem;
                 }
 
-                .filter-bar {
-                    display: flex;
-                    gap: 1rem;
-                    margin-bottom: 2rem;
-                    flex-wrap: wrap;
-                }
-
-                .filter-bar button {
-                    padding: 0.75rem 1.5rem;
-                    border: 2px solid #e1e8ed;
-                    background: white;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    font-weight: 600;
-                    transition: all 0.2s;
-                }
-
-                .filter-bar button:hover {
-                    border-color: #6c5ce7;
-                    color: #6c5ce7;
-                }
-
-                .filter-bar button.active {
-                    background: #6c5ce7;
-                    color: white;
-                    border-color: #6c5ce7;
-                }
-
                 .volunteers-grid {
                     display: grid;
-                    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+                    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
                     gap: 1.5rem;
                 }
 
@@ -221,6 +194,8 @@ const AdminVolunteers = () => {
                     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
                     overflow: hidden;
                     transition: transform 0.2s, box-shadow 0.2s;
+                    display: flex;
+                    flex-direction: column;
                 }
 
                 .volunteer-card:hover {
@@ -240,6 +215,7 @@ const AdminVolunteers = () => {
                     margin: 0;
                     font-size: 1.25rem;
                     color: #2d3436;
+                    word-break: break-word;
                 }
 
                 .status-badge {
@@ -250,23 +226,28 @@ const AdminVolunteers = () => {
                     border-radius: 20px;
                     font-size: 0.85rem;
                     font-weight: 600;
+                    flex-shrink: 0;
                 }
 
                 .card-body {
                     padding: 1.5rem;
+                    flex: 1;
                 }
 
                 .info-row {
                     display: flex;
-                    align-items: center;
+                    align-items: flex-start;
                     gap: 0.75rem;
                     margin-bottom: 1rem;
                     color: #636e72;
+                    word-break: break-word;
                 }
 
                 .info-row .icon {
                     color: #6c5ce7;
                     font-size: 1rem;
+                    margin-top: 3px;
+                    flex-shrink: 0;
                 }
 
                 .info-section {
@@ -302,56 +283,37 @@ const AdminVolunteers = () => {
                     color: #b2bec3;
                 }
 
-                .action-buttons {
-                    display: flex;
-                    gap: 0.5rem;
-                }
-
-                .action-buttons button {
-                    padding: 0.5rem 1rem;
-                    border: none;
-                    border-radius: 6px;
-                    font-weight: 600;
-                    cursor: pointer;
-                    transition: all 0.2s;
-                    font-size: 0.9rem;
-                }
-
-                .action-buttons button:disabled {
-                    opacity: 0.6;
-                    cursor: not-allowed;
-                }
-
-                .btn-approve {
-                    background-color: #4caf50;
-                    color: white;
-                }
-
-                .btn-approve:hover:not(:disabled) {
-                    background-color: #45a049;
-                    transform: translateY(-2px);
-                    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
-                }
-
-                .btn-reject {
-                    background-color: #f44336;
-                    color: white;
-                }
-
-                .btn-reject:hover:not(:disabled) {
-                    background-color: #da190b;
-                    transform: translateY(-2px);
-                    box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
-                }
-
                 .loading, .no-data {
                     text-align: center;
                     padding: 3rem;
                     color: #636e72;
                     font-size: 1.1rem;
                 }
+
+                @media (max-width: 500px) {
+                    .page-header h1 {
+                        font-size: 1.5rem;
+                    }
+
+                    .card-header {
+                        flex-direction: column;
+                        align-items: flex-start;
+                        gap: 0.5rem;
+                    }
+
+                    .volunteers-grid {
+                        grid-template-columns: 1fr;
+                    }
+
+                    .notification {
+                        left: 1rem;
+                        right: 1rem;
+                        width: auto;
+                        text-align: center;
+                    }
+                }
             `}</style>
-        </DashboardLayout>
+        </DashboardLayout >
     );
 };
 

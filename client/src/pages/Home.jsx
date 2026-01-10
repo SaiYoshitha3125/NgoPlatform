@@ -211,9 +211,10 @@ const Home = () => {
             <style>{`
                 .hero-carousel {
                     position: relative;
-                    height: 80vh;
+                    height: 80vh; /* Consider resizing to min-height for mobile if content overflows */
+                    min-height: 600px; /* Ensure minimum height */
                     overflow: hidden;
-                    background-color: var(--primary); /* Fallback */
+                    background-color: var(--primary);
                 }
                 .slide {
                     position: absolute;
@@ -222,7 +223,7 @@ const Home = () => {
                     width: 100%;
                     height: 100%;
                     background-size: cover;
-                    background-position: center;
+                    background-position: center center; /* Center the image */
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -238,14 +239,15 @@ const Home = () => {
                     position: relative;
                     z-index: 2;
                     max-width: 900px;
+                    padding: 0 1rem; /* Add side padding */
                     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
                 }
                 .hero-carousel h1 {
                     font-size: 4rem;
                     line-height: 1.1;
                     margin-bottom: 1.5rem;
-                    color: white; /* Ensure text is white on hero */
-                    text-shadow: 4px 4px 0px #000; /* Cartoon outline effect */
+                    color: white;
+                    text-shadow: 4px 4px 0px #000;
                 }
                 .hero-carousel p {
                     font-size: 1.5rem;
@@ -257,6 +259,7 @@ const Home = () => {
                     display: flex;
                     gap: 1.5rem;
                     justify-content: center;
+                    flex-wrap: wrap; /* Allow wrapping */
                 }
                 .carousel-indicators {
                     position: absolute;
@@ -297,7 +300,7 @@ const Home = () => {
                 .story-card {
                     display: grid;
                     grid-template-columns: 1fr 1fr;
-                    gap: 0; /* Remove gap for split layout */
+                    gap: 0;
                     align-items: stretch;
                     background: #f9f9f9;
                     border-radius: var(--border-radius);
@@ -319,7 +322,7 @@ const Home = () => {
                     left: 0;
                 }
                 .story-content {
-                    padding: 4rem;
+                    padding: clamp(2rem, 5vw, 4rem);
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
@@ -328,26 +331,52 @@ const Home = () => {
                 .story-content h3 {
                     color: var(--primary);
                     margin-bottom: 1.5rem;
-                    font-size: 2.2rem;
+                    font-size: clamp(1.5rem, 4vw, 2.2rem);
                 }
                 .story-content p {
-                    font-size: 1.2rem;
+                    font-size: clamp(1rem, 2.5vw, 1.2rem);
                     color: var(--text-dark);
                     line-height: 1.8;
                     margin-bottom: 1.5rem;
                     font-weight: 500;
+                    text-align: justify;
                 }
                 .story-author {
                     font-weight: 800;
                     color: var(--secondary);
                     text-transform: uppercase;
                     letter-spacing: 1px;
+                    text-align: right;
+                    margin-top: auto;
                 }
 
+                /* Mobile Responsiveness */
                 @media (max-width: 768px) {
+                    .hero-carousel {
+                        height: auto;
+                        min-height: 100vh; /* Full screen on mobile */
+                        padding: 4rem 0;
+                    }
                     .hero-carousel h1 {
                         font-size: 2.5rem;
                     }
+                    .hero-carousel p {
+                        font-size: 1.2rem;
+                        margin-bottom: 2rem;
+                    }
+                    .hero-buttons {
+                        flex-direction: column; /* Stack buttons vertically */
+                        gap: 1rem;
+                        width: 100%;
+                        max-width: 300px;
+                        margin: 0 auto;
+                    }
+                    .hero-buttons .btn {
+                        width: 100%; /* Full width buttons */
+                        display: block;
+                        text-align: center;
+                    }
+
                     .story-card {
                         grid-template-columns: 1fr;
                     }
@@ -355,6 +384,9 @@ const Home = () => {
                         height: 300px;
                         border-right: none;
                         border-bottom: var(--border-width) solid var(--border-color);
+                    }
+                    .story-content {
+                        padding: 2rem;
                     }
                 }
 
@@ -379,7 +411,7 @@ const Home = () => {
                 }
                 
                 .value-card .icon {
-                    width: 120px; /* Slightly larger for emphasis */
+                    width: 120px;
                     height: 120px;
                     line-height: 120px;
                     border-radius: 50%;
@@ -389,15 +421,15 @@ const Home = () => {
                     align-items: center;
                     justify-content: center;
                     border: 3px solid #000;
-                    background-color: white; /* Default fallback */
+                    background-color: white;
                 }
 
                 /* Pastel Colors for Core Values Icons */
-                .value-card:nth-child(1) .icon { background-color: #FFB7B2; } /* Pastel Red */
-                .value-card:nth-child(2) .icon { background-color: #B5EAD7; } /* Pastel Green */
-                .value-card:nth-child(3) .icon { background-color: #C7CEEA; } /* Pastel Purple/Blue */
-                .value-card:nth-child(4) .icon { background-color: #FFFDAC; } /* Pastel Yellow */
-                .value-card:nth-child(5) .icon { background-color: #FFDAC1; } /* Pastel Orange */
+                .value-card:nth-child(1) .icon { background-color: #FFB7B2; }
+                .value-card:nth-child(2) .icon { background-color: #B5EAD7; }
+                .value-card:nth-child(3) .icon { background-color: #C7CEEA; }
+                .value-card:nth-child(4) .icon { background-color: #FFFDAC; }
+                .value-card:nth-child(5) .icon { background-color: #FFDAC1; }
                 
                 .value-card h3 {
                     margin-bottom: 0.5rem;

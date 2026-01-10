@@ -501,6 +501,10 @@ const VolunteerDashboard = () => {
                 .btn-solid { background: #6c5ce7; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; }
                 .event-details p { margin: 0.3rem 0; color: #636e72; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
                 .event-actions { margin-top: 1.5rem; }
+
+                @media (max-width: 768px) {
+                    .form-group-grid { grid-template-columns: 1fr; }
+                }
             `}</style>
         </DashboardLayout>
     );
